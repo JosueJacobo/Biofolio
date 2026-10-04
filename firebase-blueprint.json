@@ -1,0 +1,402 @@
+{
+  "entities": {
+    "CollectorProfile": {
+      "title": "CollectorProfile",
+      "description": "Public social naturalist profile for displaying a user's biological collection.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Owner Firebase Auth UID"
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 40,
+          "pattern": "^[a-zA-Z0-9_\\-.]+$",
+          "description": "Unique naturalist handle (e.g., @botanica_sur)"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Public collector display name"
+        },
+        "bio": {
+          "type": "string",
+          "maxLength": 240,
+          "description": "Short naturalist biography and region specialty"
+        },
+        "avatarUrl": {
+          "type": "string",
+          "maxLength": 150000,
+          "description": "Avatar image URL or compressed data URI"
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "Biogeographic region or city"
+        },
+        "specialty": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "Primary taxonomic focus (e.g., Flora Neotropical, Lepidoptera)"
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Flag confirming public visibility of profile"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of profile creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of profile update"
+        }
+      },
+      "required": [
+        "uid",
+        "handle",
+        "displayName",
+        "bio",
+        "avatarUrl",
+        "location",
+        "specialty",
+        "isPublic",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Specimen": {
+      "title": "Specimen",
+      "description": "A collected plant, animal, or fungi finding with scientific taxonomy and photo.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of the collector who recorded this specimen"
+        },
+        "ownerHandle": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 40,
+          "description": "Collector handle for social attribution"
+        },
+        "ownerName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Collector display name"
+        },
+        "scientificName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120,
+          "description": "Binomial Latin scientific name"
+        },
+        "commonName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Common vernacular name"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["plant", "animal", "fungi"],
+          "description": "Taxonomic kingdom group"
+        },
+        "family": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "Taxonomic family in Latin"
+        },
+        "kingdom": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "Taxonomic kingdom (Plantae, Animalia, Fungi)"
+        },
+        "photoDataUrl": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 750000,
+          "description": "Compressed specimen photograph data URL or asset path"
+        },
+        "locationName": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Place or reserve where the finding occurred"
+        },
+        "coordinates": {
+          "type": "string",
+          "maxLength": 60,
+          "description": "Formatted GPS coordinates or elevation"
+        },
+        "habitat": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Microhabitat or ecosystem description"
+        },
+        "conservationStatus": {
+          "type": "string",
+          "maxLength": 60,
+          "description": "IUCN conservation status label"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 600,
+          "description": "Field observations and morphological notes"
+        },
+        "confidence": {
+          "type": "number",
+          "description": "AI taxonomic identification confidence (0-100)"
+        },
+        "observedDate": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "ISO or formatted date of field observation"
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Whether the specimen is visible on the public social collection grid"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp"
+        }
+      },
+      "required": [
+        "ownerId",
+        "ownerHandle",
+        "ownerName",
+        "scientificName",
+        "commonName",
+        "category",
+        "family",
+        "kingdom",
+        "photoDataUrl",
+        "locationName",
+        "coordinates",
+        "habitat",
+        "conservationStatus",
+        "notes",
+        "confidence",
+        "observedDate",
+        "isPublic",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "FollowRelation": {
+      "title": "FollowRelation",
+      "description": "Social follow relationship between two naturalist collectors.",
+      "type": "object",
+      "properties": {
+        "followerId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of the user who follows"
+        },
+        "followingId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of the collector being followed"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when follow occurred"
+        }
+      },
+      "required": ["followerId", "followingId", "createdAt"]
+    },
+    "SpecimenLike": {
+      "title": "SpecimenLike",
+      "description": "Instagram-style like on a botanical or zoological specimen.",
+      "type": "object",
+      "properties": {
+        "specimenId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "ID of the liked specimen"
+        },
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of the user who liked the specimen"
+        },
+        "userHandle": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 40,
+          "description": "Handle of the user who liked"
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Public visibility flag for secure list queries"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of like creation"
+        }
+      },
+      "required": ["specimenId", "userId", "userHandle", "isPublic", "createdAt"]
+    },
+    "SpecimenComment": {
+      "title": "SpecimenComment",
+      "description": "Instagram-style comment or taxonomic peer note on a specimen.",
+      "type": "object",
+      "properties": {
+        "specimenId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "ID of the commented specimen"
+        },
+        "authorId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of the comment author"
+        },
+        "authorHandle": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 40,
+          "description": "Handle of the comment author"
+        },
+        "authorName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Display name of the comment author"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400,
+          "description": "Comment text content"
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Public visibility flag for secure list queries"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of comment creation"
+        }
+      },
+      "required": [
+        "specimenId",
+        "authorId",
+        "authorHandle",
+        "authorName",
+        "text",
+        "isPublic",
+        "createdAt"
+      ]
+    },
+    "DirectMessage": {
+      "title": "DirectMessage",
+      "description": "Instagram Direct-style chat message between two collectors.",
+      "type": "object",
+      "properties": {
+        "roomId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Deterministic room identifier for the conversation"
+        },
+        "senderId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of message sender"
+        },
+        "senderHandle": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 40,
+          "description": "Handle of message sender"
+        },
+        "senderName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Display name of message sender"
+        },
+        "recipientId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of message recipient"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "description": "Message text content"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of message creation"
+        }
+      },
+      "required": [
+        "roomId",
+        "senderId",
+        "senderHandle",
+        "senderName",
+        "recipientId",
+        "text",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/profiles/{userId}": {
+      "schema": { "$ref": "#/entities/CollectorProfile" },
+      "description": "Public naturalist profiles (no PII stored here)."
+    },
+    "/specimens/{specimenId}": {
+      "schema": { "$ref": "#/entities/Specimen" },
+      "description": "Botanical and wildlife findings stored in collections."
+    },
+    "/follows/{followId}": {
+      "schema": { "$ref": "#/entities/FollowRelation" },
+      "description": "Instagram-style social follow graph linking collectors."
+    },
+    "/likes/{likeId}": {
+      "schema": { "$ref": "#/entities/SpecimenLike" },
+      "description": "Instagram-style likes on specimens."
+    },
+    "/comments/{commentId}": {
+      "schema": { "$ref": "#/entities/SpecimenComment" },
+      "description": "Instagram-style comments on specimens."
+    },
+    "/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/DirectMessage" },
+      "description": "Instagram Direct-style messages between collectors."
+    }
+  }
+}

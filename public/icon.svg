@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Emerald green rounded squircle background -->
+  <rect width="512" height="512" rx="128" fill="#329F6B" />
+  
+  <!-- 4 Animal Paw Toe Pads (White) -->
+  <!-- Far left toe -->
+  <ellipse cx="144" cy="240" rx="34" ry="46" transform="rotate(-12 144 240)" fill="#FFFFFF" />
+  <!-- Inner left toe -->
+  <ellipse cx="215" cy="176" rx="40" ry="56" transform="rotate(-4 215 176)" fill="#FFFFFF" />
+  <!-- Inner right toe -->
+  <ellipse cx="315" cy="182" rx="38" ry="53" transform="rotate(6 315 182)" fill="#FFFFFF" />
+  <!-- Far right toe -->
+  <ellipse cx="384" cy="244" rx="31" ry="42" transform="rotate(14 384 244)" fill="#FFFFFF" />
+
+  <!-- Botanical Leaf Paw Pad (White with Emerald Vein Cutout) -->
+  <path
+    d="M148 336C145 316 168 308 190 296C215 282 242 254 276 254C312 254 342 282 350 306C334 328 310 348 275 352C242 356 205 344 196 341C192 340 190 345 194 348C215 358 252 366 286 360C278 372 268 386 266 394C264 398 270 400 274 394C282 382 294 366 306 356C332 346 354 324 368 306C374 298 388 296 394 302C398 306 390 314 380 322C368 332 354 358 334 380C308 408 268 422 232 414C192 405 152 364 148 336Z"
+    fill="#FFFFFF"
+  />
+  <!-- Upper diagonal leaf vein cutout -->
+  <path
+    d="M254 292L312 342"
+    stroke="#329F6B"
+    stroke-width="12"
+    stroke-linecap="round"
+  />
+</svg>

@@ -1,0 +1,376 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 2. Hardened Global Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 3. Entity Validation Blueprints
+    function isValidProfile(data) {
+      return data.keys().hasAll([
+        'uid',
+        'handle',
+        'displayName',
+        'bio',
+        'avatarUrl',
+        'location',
+        'specialty',
+        'isPublic',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid',
+        'handle',
+        'displayName',
+        'bio',
+        'avatarUrl',
+        'location',
+        'specialty',
+        'isPublic',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.uid == request.auth.uid &&
+      data.handle is string && data.handle.size() >= 2 && data.handle.size() <= 40 && data.handle.matches('^[a-zA-Z0-9_\\-.]+$') &&
+      data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 80 &&
+      data.bio is string && data.bio.size() <= 240 &&
+      data.avatarUrl is string && data.avatarUrl.size() <= 150000 &&
+      data.location is string && data.location.size() <= 80 &&
+      data.specialty is string && data.specialty.size() <= 80 &&
+      data.isPublic is bool &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidSpecimen(data) {
+      return data.keys().hasAll([
+        'ownerId',
+        'ownerHandle',
+        'ownerName',
+        'scientificName',
+        'commonName',
+        'category',
+        'family',
+        'kingdom',
+        'photoDataUrl',
+        'locationName',
+        'coordinates',
+        'habitat',
+        'conservationStatus',
+        'notes',
+        'confidence',
+        'observedDate',
+        'isPublic',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'ownerId',
+        'ownerHandle',
+        'ownerName',
+        'scientificName',
+        'commonName',
+        'category',
+        'family',
+        'kingdom',
+        'photoDataUrl',
+        'locationName',
+        'coordinates',
+        'habitat',
+        'conservationStatus',
+        'notes',
+        'confidence',
+        'observedDate',
+        'isPublic',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128 && data.ownerId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.ownerId == request.auth.uid &&
+      data.ownerHandle is string && data.ownerHandle.size() >= 2 && data.ownerHandle.size() <= 40 &&
+      data.ownerName is string && data.ownerName.size() >= 1 && data.ownerName.size() <= 80 &&
+      data.scientificName is string && data.scientificName.size() >= 2 && data.scientificName.size() <= 120 &&
+      data.commonName is string && data.commonName.size() >= 1 && data.commonName.size() <= 120 &&
+      data.category is string && (data.category == 'plant' || data.category == 'animal' || data.category == 'fungi') &&
+      data.family is string && data.family.size() <= 80 &&
+      data.kingdom is string && data.kingdom.size() <= 40 &&
+      data.photoDataUrl is string && data.photoDataUrl.size() >= 5 && data.photoDataUrl.size() <= 750000 &&
+      data.locationName is string && data.locationName.size() <= 120 &&
+      data.coordinates is string && data.coordinates.size() <= 60 &&
+      data.habitat is string && data.habitat.size() <= 120 &&
+      data.conservationStatus is string && data.conservationStatus.size() <= 60 &&
+      data.notes is string && data.notes.size() <= 600 &&
+      data.confidence is number && data.confidence >= 0 && data.confidence <= 100 &&
+      data.observedDate is string && data.observedDate.size() <= 40 &&
+      data.isPublic is bool &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidFollow(data) {
+      return data.keys().hasAll(['followerId', 'followingId', 'createdAt']) &&
+      data.keys().hasOnly(['followerId', 'followingId', 'createdAt']) &&
+      data.followerId is string && data.followerId.size() >= 1 && data.followerId.size() <= 128 && data.followerId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.followerId == request.auth.uid &&
+      data.followingId is string && data.followingId.size() >= 1 && data.followingId.size() <= 128 && data.followingId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.followerId != data.followingId &&
+      data.createdAt is timestamp;
+    }
+
+    function isValidLike(data) {
+      return data.keys().hasAll(['specimenId', 'userId', 'userHandle', 'isPublic', 'createdAt']) &&
+      data.keys().hasOnly(['specimenId', 'userId', 'userHandle', 'isPublic', 'createdAt']) &&
+      data.specimenId is string && data.specimenId.size() >= 1 && data.specimenId.size() <= 128 && data.specimenId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.userId == request.auth.uid &&
+      data.userHandle is string && data.userHandle.size() >= 2 && data.userHandle.size() <= 40 &&
+      data.isPublic is bool &&
+      data.createdAt is timestamp;
+    }
+
+    function isValidComment(data) {
+      return data.keys().hasAll([
+        'specimenId',
+        'authorId',
+        'authorHandle',
+        'authorName',
+        'text',
+        'isPublic',
+        'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'specimenId',
+        'authorId',
+        'authorHandle',
+        'authorName',
+        'text',
+        'isPublic',
+        'createdAt'
+      ]) &&
+      data.specimenId is string && data.specimenId.size() >= 1 && data.specimenId.size() <= 128 && data.specimenId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.authorId is string && data.authorId.size() >= 1 && data.authorId.size() <= 128 && data.authorId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.authorId == request.auth.uid &&
+      data.authorHandle is string && data.authorHandle.size() >= 2 && data.authorHandle.size() <= 40 &&
+      data.authorName is string && data.authorName.size() >= 1 && data.authorName.size() <= 80 &&
+      data.text is string && data.text.size() >= 1 && data.text.size() <= 400 &&
+      data.isPublic is bool &&
+      data.createdAt is timestamp;
+    }
+
+    function isValidMessage(data) {
+      return data.keys().hasAll([
+        'roomId',
+        'senderId',
+        'senderHandle',
+        'senderName',
+        'recipientId',
+        'text',
+        'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'roomId',
+        'senderId',
+        'senderHandle',
+        'senderName',
+        'recipientId',
+        'text',
+        'createdAt'
+      ]) &&
+      data.roomId is string && data.roomId.size() >= 3 && data.roomId.size() <= 128 && data.roomId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.senderId is string && data.senderId.size() >= 1 && data.senderId.size() <= 128 && data.senderId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.senderId == request.auth.uid &&
+      data.senderHandle is string && data.senderHandle.size() >= 2 && data.senderHandle.size() <= 40 &&
+      data.senderName is string && data.senderName.size() >= 1 && data.senderName.size() <= 80 &&
+      data.recipientId is string && data.recipientId.size() >= 1 && data.recipientId.size() <= 128 && data.recipientId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.senderId != data.recipientId &&
+      data.text is string && data.text.size() >= 1 && data.text.size() <= 500 &&
+      data.createdAt is timestamp;
+    }
+
+    // 4. Collection Rules: Collector Profiles
+    match /profiles/{userId} {
+      allow get: if isValidId(userId) && (existing().isPublic == true || (isSignedIn() && userId == request.auth.uid));
+      allow list: if existing().isPublic == true || (isSignedIn() && existing().uid == request.auth.uid);
+
+      allow create: if isVerifiedUser() &&
+        isValidId(userId) &&
+        userId == request.auth.uid &&
+        isValidProfile(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser() &&
+        isValidId(userId) &&
+        userId == request.auth.uid &&
+        isValidProfile(incoming()) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'handle',
+            'displayName',
+            'bio',
+            'avatarUrl',
+            'location',
+            'specialty',
+            'isPublic',
+            'updatedAt'
+          ])
+        );
+
+      allow delete: if false;
+    }
+
+    // 5. Collection Rules: Specimens (Plants, Animals, Fungi)
+    match /specimens/{specimenId} {
+      allow get: if isValidId(specimenId) && (existing().isPublic == true || (isSignedIn() && existing().ownerId == request.auth.uid));
+      allow list: if existing().isPublic == true || (isSignedIn() && existing().ownerId == request.auth.uid);
+
+      allow create: if isVerifiedUser() &&
+        isValidId(specimenId) &&
+        isValidSpecimen(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        exists(/databases/$(database)/documents/profiles/$(request.auth.uid));
+
+      allow update: if isVerifiedUser() &&
+        isValidId(specimenId) &&
+        isValidSpecimen(incoming()) &&
+        existing().ownerId == request.auth.uid &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'ownerHandle',
+            'ownerName',
+            'scientificName',
+            'commonName',
+            'category',
+            'family',
+            'kingdom',
+            'photoDataUrl',
+            'locationName',
+            'coordinates',
+            'habitat',
+            'conservationStatus',
+            'notes',
+            'confidence',
+            'observedDate',
+            'isPublic',
+            'updatedAt'
+          ])
+        );
+
+      allow delete: if isVerifiedUser() &&
+        isValidId(specimenId) &&
+        existing().ownerId == request.auth.uid;
+    }
+
+    // 6. Collection Rules: Social Follows
+    match /follows/{followId} {
+      allow get: if isSignedIn() && isValidId(followId) && (
+        existing().followerId == request.auth.uid || existing().followingId == request.auth.uid
+      );
+      allow list: if isSignedIn() && (
+        existing().followerId == request.auth.uid || existing().followingId == request.auth.uid
+      );
+
+      allow create: if isVerifiedUser() &&
+        isValidId(followId) &&
+        isValidFollow(incoming()) &&
+        incoming().createdAt == request.time &&
+        exists(/databases/$(database)/documents/profiles/$(incoming().followingId));
+
+      allow update: if false;
+
+      allow delete: if isVerifiedUser() &&
+        isValidId(followId) &&
+        existing().followerId == request.auth.uid;
+    }
+
+    // 7. Collection Rules: Specimen Likes (Instagram Heart Likes)
+    match /likes/{likeId} {
+      allow get: if isValidId(likeId) && (existing().isPublic == true || (isSignedIn() && existing().userId == request.auth.uid));
+      allow list: if existing().isPublic == true || (isSignedIn() && existing().userId == request.auth.uid);
+
+      allow create: if isVerifiedUser() &&
+        isValidId(likeId) &&
+        isValidLike(incoming()) &&
+        incoming().createdAt == request.time &&
+        exists(/databases/$(database)/documents/profiles/$(request.auth.uid));
+
+      allow update: if false;
+
+      allow delete: if isVerifiedUser() &&
+        isValidId(likeId) &&
+        existing().userId == request.auth.uid;
+    }
+
+    // 8. Collection Rules: Specimen Comments (Instagram Comments)
+    match /comments/{commentId} {
+      allow get: if isValidId(commentId) && (existing().isPublic == true || (isSignedIn() && existing().authorId == request.auth.uid));
+      allow list: if existing().isPublic == true || (isSignedIn() && existing().authorId == request.auth.uid);
+
+      allow create: if isVerifiedUser() &&
+        isValidId(commentId) &&
+        isValidComment(incoming()) &&
+        incoming().createdAt == request.time &&
+        exists(/databases/$(database)/documents/profiles/$(request.auth.uid));
+
+      allow update: if false;
+
+      allow delete: if isVerifiedUser() &&
+        isValidId(commentId) &&
+        existing().authorId == request.auth.uid;
+    }
+
+    // 9. Collection Rules: Direct Messages (Instagram DM Chat)
+    match /messages/{messageId} {
+      allow get: if isSignedIn() && isValidId(messageId) && (
+        existing().senderId == request.auth.uid || existing().recipientId == request.auth.uid
+      );
+      allow list: if isSignedIn() && (
+        existing().senderId == request.auth.uid || existing().recipientId == request.auth.uid
+      );
+
+      allow create: if isVerifiedUser() &&
+        isValidId(messageId) &&
+        isValidMessage(incoming()) &&
+        incoming().createdAt == request.time &&
+        exists(/databases/$(database)/documents/profiles/$(request.auth.uid));
+
+      allow update: if false;
+
+      allow delete: if isVerifiedUser() &&
+        isValidId(messageId) &&
+        existing().senderId == request.auth.uid;
+    }
+  }
+}

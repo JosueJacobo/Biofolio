@@ -1,0 +1,6 @@
+{
+  "name": "Bio Atlas — Colección Naturalista",
+  "description": "App móvil y red social de colecciones botánicas y zoológicas con identificador científico e integración offline.",
+  "requestFramePermissions": ["camera", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
